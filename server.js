@@ -1,6 +1,3 @@
-// server.js — OpenAI-compatible proxy for NVIDIA NIM
-// Reasoning payload logic: reasoning.js. Tool-call leak recovery: tools.js.
-
 const express = require('express');
 const cors = require('cors');
 const axios = require('axios');
@@ -67,26 +64,87 @@ validateConfig();
 // validateModels() and GET /v1/models?live=true). Comments note the prior
 // backend model ID where an entry was swapped out for a dead catalog entry.
 const MODEL_MAPPING = {
-  'gpt-3.5-turbo': 'nvidia/nemotron-3-super-120b-a12b',
-  'gpt-4': 'nvidia/nemotron-3-ultra-550b-a55b',
-  'gpt-3.5': 'nvidia/nemotron-3-nano-omni-30b-a3b-reasoning', // was qwen/qwen3.5-397b-a17b
-  'gpt-4-turbo': 'moonshotai/kimi-k3',
-  'claude-3-opus': 'google/diffusiongemma-26b-a4b-it',
-  'claude-3-sonnet': 'openai/gpt-oss-20b',
-  'gemini-pro': 'nvidia/llama-3.1-nemotron-70b-instruct', // was nvidia/llama-3.3-nemotron-super-49b-v1.5
-  'gemini-turbo': 'nvidia/llama3-chatqa-1.5-70b', // was meta/llama-3.3-70b-instruct
-  'gpt-3.5o': 'nvidia/nemotron-3.5-lightning-30b-a3b', // was google/gemma-2b
-  'gpt-4-flash': 'deepseek-ai/deepseek-v4-flash-0731',
-  'gpt-4o': 'deepseek-ai/deepseek-v4-pro-0813',
-  'mistral': 'mistralai/mistral-large-2-instruct', // was mistralai/mistral-large-3-675b-instruct-2512
-  'mistral-turbo': 'nv-mistralai/mistral-nemo-12b-instruct', // was mistralai/mistral-medium-3.5-128b
-  'mistral-pro': 'mistralai/mistral-7b-instruct-v0.3', // was mistralai/mistral-small-4-119b-2603
-  'mistral-nemo': 'mistralai/mistral-nemotron',
-  'mistral-fast': 'nvidia/mistral-nemo-minitron-8b-8k-instruct', // was mistralai/ministral-14b-instruct-2512
-  'google-light': 'google/gemma-4-31b-it',
-  'google-lightest': 'meta/muse-glimmer-30b', // was google/gemma-2b
-  'google-lighter': 'poolside/laguna-xs-2.1', // was google/gemma-3-4b-it
-  'm3': 'minimaxai/minimax-m3'
+  '01-ai: yi-large',
+  'adept: fuyu-8b',
+  'ai21labs: jamba-1.5-large-instruct',
+  'aisingapore: sea-lion-7b-instruct',
+  'bigcode: starcoder2-15b',
+  'databricks: dbrx-instruct',
+  'deepseek-ai: deepseek-coder-6.7b-instruct',
+  'deepseek-ai: deepseek-v4.1-flash',
+  'google: codegemma-1.1-7b',
+  'google: codegemma-7b',
+  'google: deplot',
+  'google: diffusiongemma-26b-a4b-it',
+  'google: gemma-2b',
+  'google: gemma-3-12b-it',
+  'google: gemma-3-4b-it',
+  'google: gemma-4-31b-it',
+  'google: recurrentgemma-2b',
+  'ibm: granite-3.0-3b-a800m-instruct',
+  'ibm: granite-3.0-8b-instruct',
+  'ibm: granite-34b-code-instruct',
+  'ibm: granite-8b-code-instruct',
+  'meta: codellama-70b',
+  'meta: llama-3.2-11b-vision-instruct',
+  'meta: llama-3.2-90b-vision-instruct',
+  'meta: llama-guard-4-12b',
+  'meta: llama2-70b',
+  'meta: muse-glimmer-30b',
+  'microsoft: kosmos-2',
+  'microsoft: phi-3-vision-128k-instruct',
+  'microsoft: phi-3.5-moe-instruct',
+  'mistralai: codestral-22b-instruct-v0.1',
+  'mistralai: mistral-7b-instruct-v0.3',
+  'mistralai: mistral-large',
+  'mistralai: mistral-large-2-instruct',
+  'mistralai: mixtral-8x22b-v0.1',
+  'moonshotai: kimi-k2.6',
+  'moonshotai: kimi-k3',
+  'nv-mistralai: mistral-nemo-12b-instruct',
+  'nvidia: ai-synthetic-video-detector',
+  'nvidia: cosmos-reason2-8b',
+  'nvidia: embed-qa-4',
+  'nvidia: ising-calibration-1.5-31b',
+  'nvidia: llama-3.1-nemoguard-8b-content-safety',
+  'nvidia: llama-3.1-nemoguard-8b-topic-control',
+  'nvidia: llama-3.1-nemotron-51b-instruct',
+  'nvidia: llama-3.1-nemotron-70b-instruct',
+  'nvidia: llama-3.1-nemotron-safety-guard-8b-v3',
+  'nvidia: llama-3.1-nemotron-ultra-253b-v1',
+  'nvidia: llama-3.2-nemoretriever-1b-vlm-embed-v1',
+  'nvidia: llama-3.2-nv-embedqa-1b-v1',
+  'nvidia: llama-nemotron-embed-vl-1b-v2',
+  'nvidia: llama3-chatqa-1.5-70b',
+  'nvidia: mistral-nemo-minitron-8b-8k-instruct',
+  'nvidia: nemotron-3-embed-1b',
+  'nvidia: nemotron-3-nano-omni-30b-a3b-reasoning',
+  'nvidia: nemotron-3-super-120b-a12b',
+  'nvidia: nemotron-3-ultra-550b-a55b',
+  'nvidia: nemotron-3.5-content-safety',
+  'nvidia: nemotron-3.5-lightning-30b-a3b',
+  'nvidia: nemotron-4-340b-instruct',
+  'nvidia: nemotron-4-340b-reward',
+  'nvidia: nemotron-nano-3-30b-a3b',
+  'nvidia: nemotron-parse',
+  'nvidia: nemotron-parse-2.0',
+  'nvidia: neva-22b',
+  'nvidia: nv-embedqa-mistral-7b-v2',
+  'nvidia: nvclip',
+  'nvidia: riva-translate-4b-instruct',
+  'nvidia: riva-translate-4b-instruct-v1.1',
+  'nvidia: riva-translate-4b-instruct-v2',
+  'nvidia: vila',
+  'openai: gpt-oss-20b',
+  'poolside: laguna-xs-2.1',
+  'snowflake: arctic-embed-l',
+  'writer: palmyra-creative-122b',
+  'writer: palmyra-fin-70b-32k',
+  'writer: palmyra-med-70b',
+  'writer: palmyra-med-70b-32k',
+  'z-ai: glm-5.3',
+  'z-ai: glm-5.3-flash',
+  'zyphra: zamba2-7b-instruct'
 };
 
 // Used when an unrecognized alias is requested. Must point at a live model.

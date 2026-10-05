@@ -70,15 +70,14 @@ const MODEL_MAPPING = {
   'gpt-4-turbo': 'moonshotai/kimi-k3',
   'claude-3-opus': 'google/diffusiongemma-26b-a4b-it',
   'claude-3-sonnet': 'openai/gpt-oss-20b',
+  'deepseek-ai': 'deepseek-v4.1-flash'
   'gemini-pro': 'nvidia/llama-3.1-nemotron-70b-instruct', // was nvidia/llama-3.3-nemotron-super-49b-v1.5
   'gemini-turbo': 'nvidia/llama3-chatqa-1.5-70b', // was meta/llama-3.3-70b-instruct
   'gpt-3.5o': 'nvidia/nemotron-3.5-lightning-30b-a3b', // was google/gemma-2b
-  'gpt-4-flash': 'deepseek-ai/deepseek-v4-flash-0731',
   'gpt-4o': 'deepseek-ai/deepseek-v4-pro-0813',
   'mistral': 'mistralai/mistral-large-2-instruct', // was mistralai/mistral-large-3-675b-instruct-2512
   'mistral-turbo': 'nv-mistralai/mistral-nemo-12b-instruct', // was mistralai/mistral-medium-3.5-128b
   'mistral-pro': 'mistralai/mistral-7b-instruct-v0.3', // was mistralai/mistral-small-4-119b-2603
-  'mistral-nemo': 'mistralai/mistral-nemotron',
   'mistral-fast': 'nvidia/mistral-nemo-minitron-8b-8k-instruct', // was mistralai/ministral-14b-instruct-2512
   'google-light': 'google/gemma-4-31b-it',
   'google-lightest': 'meta/muse-glimmer-30b', // was google/gemma-2b
